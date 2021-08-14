@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import styled from 'styled-components/native';
@@ -8,6 +8,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LargeButton from '../components/LargeButton';
 import Link from '../components/Link';
 import Input from '../components/Input';
+import { AuthContext } from '../../../context/providers/AuthProvider';
+import { useEffect } from 'react';
 
 const Container = styled.View`
   flex: 1;
@@ -20,6 +22,13 @@ const HeadingText = styled.Text`
   text-align: center;
   font-weight: bold;
   margin: 20px 0;
+`;
+
+const Error = styled.Text`
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
 `;
 
 type SignupScreenRouteProp = RouteProp<BaseStackParamList, 'Signup'>;
@@ -36,6 +45,14 @@ type Props = {
 
 const Signup = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
+  const authState = useContext(AuthContext);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const createUser = () => {
+    authState.signUp(email, password);
+  };
 
   return (
     <Container
@@ -54,19 +71,28 @@ const Signup = ({ navigation, route }: Props) => {
       >
         <HeadingText>Crear tu cuenta</HeadingText>
 
-        <Input marginBottom={16} placeholder="Nombre" />
         <Input
-          placeholder="Numero de teléfono o dirección de correo"
+          value={email}
+          onChangeText={setEmail}
           marginBottom={16}
+          placeholder="Email"
         />
-        <Input placeholder="Fecha de nacimiento" />
+        <Input
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          marginBottom={16}
+          secureTextEntry
+        />
+
+        {!!authState.error && <Error>{authState.error}</Error>}
       </View>
 
       <LargeButton
         backgroundColor="#4C9EEB"
         fontColor="white"
         fontSize={18}
-        onPress={() => console.log('Crear cuenta con email')}
+        onPress={createUser}
         text="Crear cuenta"
         marginBottom={20}
       />

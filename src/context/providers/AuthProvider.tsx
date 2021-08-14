@@ -35,13 +35,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [error, setError] = React.useState('');
 
   const signIn = async (email: string, password: string) => {
+    if (error !== '') {
+      setError('');
+    }
     try {
       const response: Firebase.auth.UserCredential =
         await Firebase.auth().signInWithEmailAndPassword(email, password);
+      console.log(response);
       setUser(response);
     } catch (error) {
       setError(error.message);
     }
+  };
+
+  const signUp = async (email: string, password: string) => {
+    if (error !== '') {
+      setError('');
+    }
+
+    try {
+      const response: Firebase.auth.UserCredential =
+        await Firebase.auth().createUserWithEmailAndPassword(email, password);
+      console.log(response);
+      setUser(response);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const signOut = () => {
+    setUser(null);
   };
 
   return (
@@ -49,8 +72,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       value={{
         user,
         signIn,
-        signUp: () => {},
-        signOut: () => {},
+        signUp,
+        signOut,
         error,
       }}
     >

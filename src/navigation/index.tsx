@@ -8,10 +8,12 @@ import CreatePost from '../screens/CreatePost';
 import MessagesSettings from '../screens/MessagesSettings';
 import Settings from '../screens/Settings';
 import RootNavigator from './RootNavigator';
+import { AuthContext } from '../context/providers/AuthProvider';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  const { user } = React.useContext(AuthContext);
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -19,13 +21,27 @@ const Navigation = () => {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="Onboarding" component={Onboarding} />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Signin" component={Signin} />
-        <Stack.Screen name="Root" component={RootNavigator} />
-        <Stack.Screen name="Create Post" component={CreatePost} />
-        <Stack.Screen name="Messages Settings" component={MessagesSettings} />
-        <Stack.Screen name="Settings" component={Settings} />
+        {!!user ? (
+          <>
+            <Stack.Screen name="Onboarding" component={Onboarding} />
+            <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name="Signin" component={Signin} />
+          </>
+        ) : (
+          <>
+            <Stack.Group>
+              <Stack.Screen name="Root" component={RootNavigator} />
+              <Stack.Screen
+                name="Messages Settings"
+                component={MessagesSettings}
+              />
+              <Stack.Screen name="Settings" component={Settings} />
+            </Stack.Group>
+            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+              <Stack.Screen name="Create Post" component={CreatePost} />
+            </Stack.Group>
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

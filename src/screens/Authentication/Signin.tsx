@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../components/Header';
 import styled from 'styled-components/native';
@@ -8,6 +8,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LargeButton from './components/LargeButton';
 import Link from './components/Link';
 import Input from './components/Input';
+import { AuthContext } from '../../context/providers/AuthProvider';
 
 const Container = styled.View`
   flex: 1;
@@ -31,6 +32,13 @@ const CancelHeaderButton = styled.Text`
   color: #4c9eeb;
 `;
 
+const Error = styled.Text`
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+`;
+
 type SigninScreenRouteProp = RouteProp<BaseStackParamList, 'Signin'>;
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
@@ -45,6 +53,14 @@ type Props = {
 
 const Signin = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
+  const { signIn, error } = useContext(AuthContext);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const login = () => {
+    signIn(email, password);
+  };
 
   return (
     <Container
@@ -67,18 +83,26 @@ const Signin = ({ navigation, route }: Props) => {
         </HeadingText>
 
         <Input
+          value={email}
+          onChangeText={setEmail}
           marginBottom={16}
           placeholder="Teléfono, correo electrónico o
          nombre de usuario"
         />
-        <Input placeholder="Contraseña" />
+        <Input
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Contraseña"
+          secureTextEntry
+        />
+        {!!error && <Error>{error}</Error>}
       </View>
 
       <LargeButton
         backgroundColor="#4C9EEB"
         fontColor="white"
         fontSize={18}
-        onPress={() => console.log('Crear cuenta con email')}
+        onPress={login}
         text="Iniciar sesion"
         marginBottom={20}
       />
